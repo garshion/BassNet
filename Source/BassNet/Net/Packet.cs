@@ -1,4 +1,5 @@
-﻿using System;
+﻿using K4os.Compression.LZ4;
+using System;
 
 namespace Bass.Net
 {
@@ -22,10 +23,6 @@ namespace Bass.Net
 	public class Packet
 	{
 		private const int PacketCompressStartSize = 60; // 패킷 압축을 할 데이터의 크기
-
-
-
-
 
 
 		public int SenderIndex { get; set; } = 0;
@@ -122,16 +119,8 @@ namespace Bass.Net
 
 		public Packet(byte[] recvBuffer, int nBufferSize)
 		{
-			// from RecvBuffer
-			if (null == recvBuffer
-				|| nBufferSize < Define.PacketHeaderLength
-				|| nBufferSize > Define.MaxPacketBinaryLength)
-			{
+			if(CopyRecvData(recvBuffer, nBufferSize) != ENetError.Success)
 				SetData(0, null, 0);
-				return;
-			}
-
-			Buffer.BlockCopy(recvBuffer, 0, Binary, 0, nBufferSize);
 		}
 
 		public ENetError SetData(int protocol, byte[] data = null, int dataSize = 0)
@@ -149,12 +138,25 @@ namespace Bass.Net
 			if (dataSize > Define.MaxPacketDataBinaryLength)
 				return ENetError.Packet_DataSizeIsTooLarge;
 
+			bool bCompressed = false;
+
 			if (dataSize > 0)
 			{
 				if (null == data)
 					return ENetError.Packet_DataIsNull;
 
-				Buffer.BlockCopy(data, 0, Binary, Define.PacketDataOffset, dataSize);
+				if (dataSize >= PacketCompressStartSize)
+				{
+					int nCompressSize = LZ4Codec.Encode(data, 0, dataSize, Binary, Define.PacketDataOffset, Define.MaxPacketDataBinaryLength);
+					if (nCompressSize > 0)
+					{
+						bCompressed = true;
+						dataSize = nCompressSize;
+					}
+				}
+				
+				if(false == bCompressed)
+					Buffer.BlockCopy(data, 0, Binary, Define.PacketDataOffset, dataSize);
 			}
 
 			Size = Define.PacketHeaderLength + dataSize;
@@ -179,7 +181,25 @@ namespace Bass.Net
 			if (dataSize > Define.MaxPacketBinaryLength)
 				return ENetError.Packet_DataSizeIsTooLarge;
 
-			Buffer.BlockCopy(recvData, 0, Binary, 0, dataSize);
+			Buffer.BlockCopy(recvData, 0, Binary, 0, Define.PacketHeaderLength);
+
+			// XOR 처리
+
+			// 압축 해제 처리
+			if(Compressed)
+			{
+				int nDecompressSize = LZ4Codec.Decode(recvData, Define.PacketDataOffset, dataSize - Define.PacketHeaderLength, Binary, Define.PacketDataOffset, Define.MaxPacketDataBinaryLength);
+				if (nDecompressSize > 0)
+				{
+					Size = nDecompressSize + Define.PacketHeaderLength;
+					Compressed = false;
+				}
+			}
+			else
+			{
+				if (dataSize > Define.PacketHeaderLength)
+					Buffer.BlockCopy(recvData, Define.PacketDataOffset, Binary, Define.PacketDataOffset, dataSize - Define.PacketHeaderLength);
+			}
 
 			return ENetError.Success;
 		}
