@@ -194,7 +194,7 @@ namespace Bass.Net.Client
 		private void _RecvProcess(SocketAsyncEventArgs e, int pendingFalseCount)
 		{
 			if (e.BytesTransferred <= 0
-				|| e.SocketError == SocketError.Success)
+				|| e.SocketError != SocketError.Success)
 			{
 				Disconnect();
 				return;
