@@ -138,7 +138,7 @@ namespace Bass.Net
 			if (dataSize > Define.MaxPacketDataBinaryLength)
 				return ENetError.Packet_DataSizeIsTooLarge;
 
-			bool bCompressed = false;
+			Compressed = false;
 
 			if (dataSize > 0)
 			{
@@ -150,12 +150,12 @@ namespace Bass.Net
 					int nCompressSize = LZ4Codec.Encode(data, 0, dataSize, Binary, Define.PacketDataOffset, Define.MaxPacketDataBinaryLength);
 					if (nCompressSize > 0)
 					{
-						bCompressed = true;
+						Compressed = true;
 						dataSize = nCompressSize;
 					}
 				}
 				
-				if(false == bCompressed)
+				if(false == Compressed)
 					Buffer.BlockCopy(data, 0, Binary, Define.PacketDataOffset, dataSize);
 			}
 

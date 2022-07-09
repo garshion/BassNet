@@ -84,7 +84,7 @@ namespace Bass.Net.Internal
 
         private int _GetMessageSize()
         {
-            return BitConverter.ToInt32(mBuffer, Define.PacketProtocolLength);
+            return BitConverter.ToInt16(mBuffer, Define.PacketSizeOffset);
         }
 
 
