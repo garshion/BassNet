@@ -133,14 +133,16 @@ namespace Test.Client
 				return false;
 
 			Packet packet = new Packet((int)protocol);
-			using (MemoryStream ms = new MemoryStream(packet.Binary, Define.PacketDataOffset, Define.MaxPacketDataBinaryLength))
+
+			using (MemoryStream ms = new MemoryStream())
 			{
 				BinaryFormatter bf = new BinaryFormatter();
 				try
 				{
 					bf.Serialize(ms, msg);
-					packet.Size = Define.PacketHeaderLength + (int)ms.Position;
+					packet.SetData(ms.ToArray(), (int)ms.Length);
 					mSocket.SendPacket(packet);
+
 				}
 				catch (Exception)
 				{

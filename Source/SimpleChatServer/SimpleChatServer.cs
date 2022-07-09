@@ -171,13 +171,13 @@ namespace Test.Server
 
 			if(null != msg)
 			{
-				using (MemoryStream ms = new MemoryStream(packet.Binary, Define.PacketDataOffset, Define.MaxPacketDataBinaryLength))
+				using (MemoryStream ms = new MemoryStream())
 				{
 					BinaryFormatter bf = new BinaryFormatter();
 					try
 					{
 						bf.Serialize(ms, msg);
-						packet.Size = Define.PacketHeaderLength + (int)ms.Position;
+						packet.SetData(ms.ToArray(), (int)ms.Length);
 					}
 					catch (Exception)
 					{
@@ -198,20 +198,7 @@ namespace Test.Server
 			if (null == packet)
 				return false;
 
-			using (MemoryStream ms = new MemoryStream(packet.Binary, Define.PacketDataOffset, Define.MaxPacketDataBinaryLength))
-			{
-				BinaryFormatter bf = new BinaryFormatter();
-				try
-				{
-					bf.Serialize(ms, msg);
-					packet.Size = Define.PacketHeaderLength + (int)ms.Position;
-					mServer.SendToClient(sessionIndex, packet);
-				}
-				catch (Exception)
-				{
-					return false;
-				}
-			}
+			mServer.SendToClient(sessionIndex, packet);
 
 			return true;
 		}
