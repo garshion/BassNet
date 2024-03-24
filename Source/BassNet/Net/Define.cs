@@ -3,21 +3,8 @@ namespace Bass.Net
 {
     public class Define
     {
-        // Packet
-        public const int MaxPacketBinaryLength = 8000;
-
-        public const int PacketProtocolLength = sizeof(int);
-        public const int PacketSizeLength = sizeof(int);
-        public const int PacketHeaderLength = PacketProtocolLength + PacketSizeLength;
-
-        public const int PacketProtocolOffset = 0;
-        public const int PacketSizeOffset = PacketProtocolLength;
-        public const int PacketDataOffset = PacketHeaderLength;
-
-        public const int MaxPacketDataBinaryLength = MaxPacketBinaryLength - PacketHeaderLength;
-
         // ClientSocket
-        public const int SocketBufferSize = MaxPacketBinaryLength * 2;
+        public const int SocketBufferSize = Packet.MAX_PACKET_BINARY_SIZE * 2;
 
 
         // Server

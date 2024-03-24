@@ -108,7 +108,7 @@ namespace Test.Client
 			if (null == msg)
 				return false;
 
-			using (MemoryStream ms = new MemoryStream(msg.Binary, Define.PacketDataOffset, msg.DataSize))
+			using (MemoryStream ms = new MemoryStream(msg.Binary, Packet.PACKET_DATA_OFFSET, msg.DataSize))
 			{
 				BinaryFormatter bf = new BinaryFormatter();
 				try
@@ -133,13 +133,13 @@ namespace Test.Client
 				return false;
 
 			Packet packet = new Packet((int)protocol);
-			using (MemoryStream ms = new MemoryStream(packet.Binary, Define.PacketDataOffset, Define.MaxPacketDataBinaryLength))
+			using (MemoryStream ms = new MemoryStream(packet.Binary, Packet.PACKET_DATA_OFFSET, Packet.MAX_PACKET_DATA_SIZE))
 			{
 				BinaryFormatter bf = new BinaryFormatter();
 				try
 				{
 					bf.Serialize(ms, msg);
-					packet.Size = Define.PacketHeaderLength + (int)ms.Position;
+					packet.Size = (short)(Packet.PACKET_HEADER_SIZE + (int)ms.Position);
 					mSocket.SendPacket(packet);
 				}
 				catch (Exception)
@@ -218,5 +218,19 @@ namespace Test.Client
 			_AddMessage("*** 서버에 접속되었습니다. ***");
 		}
 
-	}
+        private void txtChat_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtNick_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listChat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+    }
 }
