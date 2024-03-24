@@ -54,7 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BassNet\BassNet.csproj">
-      <Project>{61c7e69f-86dd-498d-83be-ae2186d31c92}</Project>
+      <Project>{dcc0e62a-cbae-4b0c-bc14-0a8c46aa695e}</Project>
       <Name>BassNet</Name>
     </ProjectReference>
     <ProjectReference Include="..\SimpleProtocol\SimpleProtocol.csproj">

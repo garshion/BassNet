@@ -114,7 +114,9 @@ namespace Bass.Net.Server.Internal
             {
                 try
                 {
+#pragma warning disable SYSLIB0006
                     mListenThread?.Abort();
+#pragma warning restore SYSLIB0006
                 }
                 catch (Exception e)
                 {
