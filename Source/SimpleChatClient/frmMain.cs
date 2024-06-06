@@ -1,20 +1,13 @@
 ﻿using Bass.Net;
 using Bass.Net.Client;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Test.Client
 {
-	public partial class frmMain : Form
+    public partial class frmMain : Form
 	{
 
 		private ClientSocket mSocket = new ClientSocket();
@@ -29,9 +22,9 @@ namespace Test.Client
 			mSocket.OnConnectedCallback += _OnConnected;
 			mSocket.OnDisconnectedCallback += _OnDisconnected;
 			mSocket.OnPacketReceivedCallback += _OnPacketProcess;
+            mSocket.OnConnectFailedCallback += _OnConnectFailed;
 
-			CheckForIllegalCrossThreadCalls = false;
-
+            CheckForIllegalCrossThreadCalls = false;
 		}
 
 		private void btnClear_Click(object sender, EventArgs e)
@@ -217,6 +210,17 @@ namespace Test.Client
 			btnConnect.Enabled = false;
 			_AddMessage("*** 서버에 접속되었습니다. ***");
 		}
+
+        private void _OnConnectFailed()
+        {
+            bConnected = false;
+            bLogined = false;
+            txtNick.Enabled = true;
+
+            btnConnect.Enabled = true;
+            _AddMessage("*** 서버에 접속을 실패하였습니다. ***");
+        }
+
 
         private void txtChat_TextChanged(object sender, EventArgs e)
         {
